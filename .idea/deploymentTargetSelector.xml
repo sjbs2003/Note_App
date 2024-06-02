@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="deploymentTargetSelector">
+    <selectionStates>
+      <SelectionState runConfigName="app">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-05-24T06:50:39.728291600Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Hp\.android\avd\Pixel_7_Pro_API_34.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="PreviewNoteListScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="PreviewNoteCreationScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="PreviewNoteDetailScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="NoteListScreenPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-06-01T14:30:13.207154500Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Hp\.android\avd\Pixel_7_Pro_API_34.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="NoteDetailScreenPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-06-01T14:30:25.184195Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Hp\.android\avd\Pixel_7_Pro_API_34.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+    </selectionStates>
+  </component>
+</project>
