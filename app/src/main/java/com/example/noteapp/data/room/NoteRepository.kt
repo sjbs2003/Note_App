@@ -2,27 +2,27 @@ package com.example.noteapp.data.room
 
 class NoteRepository(private val noteDao: NoteDao) {
 
-    suspend fun insert(note: Note) {
+    suspend fun insert(note: NoteEntity) {
         noteDao.insert(note.toEntity())
     }
 
-    suspend fun update(note: Note) {
+    suspend fun update(note: NoteEntity) {
         noteDao.update(note.toEntity())
     }
 
-    suspend fun delete(note: Note) {
+    suspend fun delete(note: NoteEntity) {
         noteDao.delete(note.toEntity())
     }
 
-    suspend fun getAllNotes(): List<Note> {
+    suspend fun getAllNotes(): List<NoteEntity> {
         return noteDao.getAllNotes().map { it.toDomainModel() }
     }
 
-    suspend fun getNoteById(id: Long): Note? {
+    suspend fun getNoteById(id: Long): NoteEntity? {
         return noteDao.getNoteById(id)?.toDomainModel()
     }
 
-    private fun Note.toEntity(): NoteEntity {
+    private fun NoteEntity.toEntity(): NoteEntity {
         return NoteEntity(
             id = this.id,
             title = this.title,
@@ -31,8 +31,8 @@ class NoteRepository(private val noteDao: NoteDao) {
         )
     }
 
-    private fun NoteEntity.toDomainModel(): Note {
-        return Note(
+    private fun NoteEntity.toDomainModel(): NoteEntity {
+        return NoteEntity(
             id = this.id,
             title = this.title,
             content = this.content,

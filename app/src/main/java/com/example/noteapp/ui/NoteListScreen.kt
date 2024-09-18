@@ -23,14 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.noteapp.R
-import com.example.noteapp.data.room.Note
+import com.example.noteapp.data.room.NoteEntity
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListScreen(
-    notes: List<Note>,
-    onNoteClick: (Note) -> Unit,
+    notes: List<NoteEntity>,
+    onNoteClick: (NoteEntity) -> Unit,
     onAddNoteClick: () -> Unit // Add this parameter
 ) {
     Scaffold(
@@ -58,7 +58,7 @@ fun NoteListScreen(
 
 
 @Composable
-fun NoteListItem(note: Note, onClick: () -> Unit) {
+fun NoteListItem(note: NoteEntity, onClick: () -> Unit) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,8 +76,8 @@ fun NoteListItem(note: Note, onClick: () -> Unit) {
 @Composable
 private fun NoteListScreenPreview() {
     val notes = listOf(
-        Note(1, "Title 1", "Content 1"),
-        Note(2, "Title 2", "Content 2")
+        NoteEntity(1, "Title 1", "Content 1"),
+        NoteEntity(2, "Title 2", "Content 2")
     )
     NoteListScreen(notes = notes, onNoteClick = {}, onAddNoteClick = {})
 }

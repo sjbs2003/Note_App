@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
-import com.example.noteapp.data.room.Note
+import com.example.noteapp.data.room.NoteEntity
 import com.example.noteapp.data.room.NoteRepository
 import kotlinx.coroutines.launch
 
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
-    private val _notes = mutableStateOf<List<Note>>(emptyList())
-    val notes: State<List<Note>> = _notes
+    private val _notes = mutableStateOf<List<NoteEntity>>(emptyList())
+    val notes: State<List<NoteEntity>> = _notes
 
     init {
         getAllNotes()
@@ -23,7 +23,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun saveOrUpdateNote(note: Note) {  // Refresh notes after saving/updating
+    fun saveOrUpdateNote(note: NoteEntity) {  // Refresh notes after saving/updating
         viewModelScope.launch {
             val existingNote = repository.getNoteById(note.id)
             if (existingNote != null){
@@ -35,14 +35,14 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun deleteNote(note: Note) {
+    fun deleteNote(note: NoteEntity) {
         viewModelScope.launch {
             repository.delete(note)
             getAllNotes() // Refresh notes after deleting
         }
     }
 
-    fun getNoteById(noteId: Int): Note? {
+    fun getNoteById(noteId: Int): NoteEntity? {
         return _notes.value.find { it.id.toInt() == noteId }
     }
 

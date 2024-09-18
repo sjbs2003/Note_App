@@ -43,7 +43,10 @@ fun NoteAppScreen(
             if (note != null) {
                 NoteDetailScreen(
                     note = note,
-                    onEditClick = { navController.navigate("${NoteScreen.NoteCreate.route}/${note.id}") },
+                    onEditClick = {
+                        viewModel.saveOrUpdateNote(note)
+                        navController.popBackStack()
+                                  },
                     onDeleteClick = {
                         viewModel.deleteNote(note)
                         navController.popBackStack()

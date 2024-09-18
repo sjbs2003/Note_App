@@ -19,17 +19,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.noteapp.data.room.Note
 import android.content.Context
 import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
 import com.example.noteapp.R
+import com.example.noteapp.data.room.NoteEntity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteDetailScreen(
-    note: Note,
+    note: NoteEntity,
     onEditClick: () -> Unit,
     onDeleteClick:  () -> Unit,
 
@@ -84,7 +84,7 @@ fun shareNoteContent(context: Context, title: String, content: String) {
 @Preview
 @Composable
 fun NoteDetailScreenPreview() {
-    val note = Note(id = 1, title = "Sample Note", content = "This is the content of the sample note.")
+    val note = NoteEntity(id = 1, title = "Sample Note", content = "This is the content of the sample note.")
     NoteDetailScreen(note = note, onEditClick = {}, onDeleteClick = {} )
 }
 

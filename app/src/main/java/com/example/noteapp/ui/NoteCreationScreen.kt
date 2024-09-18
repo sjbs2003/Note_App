@@ -25,13 +25,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.noteapp.R
-import com.example.noteapp.data.room.Note
+import com.example.noteapp.data.room.NoteEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteCreationScreen(
-    note: Note?,
-    onSaveClick: (Note) -> Unit
+    note: NoteEntity?,
+    onSaveClick: (NoteEntity) -> Unit
 ) {
     var title by remember { mutableStateOf(note?.title ?: "") }
     var content by remember { mutableStateOf(note?.content ?: "") }
@@ -46,7 +46,7 @@ fun NoteCreationScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onSaveClick(Note(id = note?.id ?: 0, title = title, content = content)) }) {
+            FloatingActionButton(onClick = { onSaveClick(NoteEntity(id = note?.id ?: 0, title = title, content = content)) }) {
                 Icon(Icons.Default.Check, contentDescription = "Save Note")
             }
         }
