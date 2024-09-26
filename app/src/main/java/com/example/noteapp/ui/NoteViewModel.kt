@@ -23,17 +23,23 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun saveOrUpdateNote(note: NoteEntity) {  // Refresh notes after saving/updating
+    fun editNote(note: NoteEntity) {
         viewModelScope.launch {
             val existingNote = repository.getNoteById(note.id)
-            if (existingNote != null){
-                repository.update(note) // update existing note
+            if (existingNote != null) {
+                // Update the note since it already exists
+                repository.update(note)
             } else {
-                repository.insert(note) // insert new note
+                // Handle the case where the note doesn't exist, you can either show a message
+                // or insert the note as a new one
+                // For example, you can throw an exception or notify the user
+                // e.g., throw IllegalArgumentException("Note not found for editing")
+                repository.insert(note) // or notify user if preferred
             }
-            getAllNotes()
+            getAllNotes() // Refresh the list of notes
         }
     }
+
 
     fun deleteNote(note: NoteEntity) {
         viewModelScope.launch {

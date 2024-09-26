@@ -44,7 +44,7 @@ fun NoteAppScreen(
                 NoteDetailScreen(
                     note = note,
                     onEditClick = {
-                        viewModel.saveOrUpdateNote(note)
+                        viewModel.editNote(note)
                         navController.popBackStack()
                                   },
                     onDeleteClick = {
@@ -61,7 +61,7 @@ fun NoteAppScreen(
             NoteCreationScreen(
                 note = note,
                 onSaveClick = {
-                    viewModel.saveOrUpdateNote(it)
+                    viewModel.editNote(it)
                     navController.popBackStack()
                 }
             )
@@ -71,7 +71,7 @@ fun NoteAppScreen(
             NoteCreationScreen(
                 note = null,
                 onSaveClick = {
-                    viewModel.saveOrUpdateNote(it)
+                    viewModel.editNote(it)
                     navController.popBackStack()
                 }
             )
