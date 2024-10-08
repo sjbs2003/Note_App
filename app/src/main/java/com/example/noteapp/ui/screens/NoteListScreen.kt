@@ -53,12 +53,14 @@ import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteEntity
 import com.example.noteapp.data.room.NoteRepository
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListScreen(
-    viewModel: NoteListViewModel = viewModel(),
+    repository: NoteRepository,
     onNoteClick: (NoteEntity) -> Unit
 ) {
+    val viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.NoteListViewModelFactory(repository))
     val notes by viewModel.notes.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val categories = listOf("All", "Work", "Reading", "Important")

@@ -1,14 +1,18 @@
 package com.example.noteapp
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.noteapp.data.room.NoteDatabase
+import com.example.noteapp.data.room.OfflineNoteRepository
 import com.example.noteapp.ui.screens.NoteCreationScreen
 import com.example.noteapp.ui.screens.NoteDetailScreen
 import com.example.noteapp.ui.screens.NoteListScreen
+
 
 enum class NoteScreen(val route: String) {
     NoteList("noteList"),
@@ -25,7 +29,11 @@ fun NoteApp() {
         startDestination = NoteScreen.NoteList.route
         ) {
         composable(route = NoteScreen.NoteList.route) {
+            val database = NoteDatabase.getDatabase(LocalContext.current)
+            val noteDao = database.noteDao()
+            val repository = OfflineNoteRepository(noteDao)
             NoteListScreen(
+                repository = repository,
                 onNoteClick = { nodeId ->
                     navController.navigate(NoteScreen.NoteDetail.route.replace("{noteId}", nodeId.toString()))
                 }
