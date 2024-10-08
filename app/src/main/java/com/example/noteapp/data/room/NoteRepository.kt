@@ -1,44 +1,14 @@
 package com.example.noteapp.data.room
 
-class NoteRepository(private val noteDao: NoteDao) {
+import kotlinx.coroutines.flow.Flow
 
-    suspend fun insert(note: NoteEntity) {
-        noteDao.insert(note.toEntity())
-    }
+interface NoteRepository{
 
-    suspend fun update(note: NoteEntity) {
-        noteDao.update(note.toEntity())
-    }
+    fun getAllNotes(): Flow<List<NoteEntity>>
 
-    suspend fun delete(note: NoteEntity) {
-        noteDao.delete(note.toEntity())
-    }
+    fun getNote(id:Long): Flow<NoteEntity?>
 
-    suspend fun getAllNotes(): List<NoteEntity> {
-        return noteDao.getAllNotes().map { it.toDomainModel() }
-    }
-
-    suspend fun getNoteById(id: Long): NoteEntity? {
-        return noteDao.getNoteById(id)?.toDomainModel()
-    }
-
-    private fun NoteEntity.toEntity(): NoteEntity {
-        return NoteEntity(
-            id = this.id,
-            title = this.title,
-            content = this.content,
-            creationDate = this.creationDate
-        )
-    }
-
-    private fun NoteEntity.toDomainModel(): NoteEntity {
-        return NoteEntity(
-            id = this.id,
-            title = this.title,
-            content = this.content,
-            creationDate = this.creationDate
-        )
-    }
-
-
+    suspend fun insertNote(note: NoteEntity)
+    suspend fun deleteNote(note: NoteEntity)
+    suspend fun updateNote(note: NoteEntity)
 }
