@@ -1,7 +1,6 @@
 package com.example.noteapp.ui.screens
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.data.room.NoteEntity
 import com.example.noteapp.data.room.NoteRepository
