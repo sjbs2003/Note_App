@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
@@ -58,7 +59,8 @@ import com.example.noteapp.data.room.NoteRepository
 @Composable
 fun NoteListScreen(
     repository: NoteRepository,
-    onNoteClick: (NoteEntity) -> Unit
+    onNoteClick: (Long) -> Unit,
+    onCreateNoteClick: () -> Unit
 ) {
     val viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.NoteListViewModelFactory(repository))
     val notes by viewModel.notes.collectAsState()
@@ -66,14 +68,18 @@ fun NoteListScreen(
     val categories = listOf("All", "Work", "Reading", "Important")
     val searchQuery by viewModel.searchQuery.collectAsState()
 
+    val darkGray = Color(0xFF1E1E1E)
+    val lightGray = Color(0xFF2A2A2A)
+
     Scaffold(
+        containerColor = darkGray,
         topBar = {
             TopAppBar(
                 title = {
                     TextField(
                         value = searchQuery,
                         onValueChange = { viewModel.updateSearchQuery(it) },
-                        placeholder = { Text("Search your notes") },
+                        placeholder = { Text("Search your notes", color = Color.Gray) },
                         singleLine = true,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
@@ -82,13 +88,15 @@ fun NoteListScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* TODO: Open menu */ }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                     }
                 },
                 actions = {
@@ -106,37 +114,52 @@ fun NoteListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = darkGray
                 )
             )
         },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(painter = painterResource(id = R.drawable.ic_home), contentDescription = "Home") },
-                    selected = false,
-                    onClick = { /* TODO */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(painter = painterResource(id = R.drawable.ic_edit), contentDescription = "Edit") },
-                    selected = false,
-                    onClick = { /* TODO */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Add, contentDescription = "Add Note") },
-                    selected = false,
-                    onClick = { viewModel.addNewNote() }
-                )
-                NavigationBarItem(
-                    icon = { Icon(painter = painterResource(id = R.drawable.ic_mic), contentDescription = "Voice Note") },
-                    selected = false,
-                    onClick = { /* TODO */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(painter = painterResource(id = R.drawable.ic_images), contentDescription = "Images") },
-                    selected = false,
-                    onClick = { /* TODO */ }
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Card(
+                    shape = RoundedCornerShape(28.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = darkGray)
+                ) {
+                    NavigationBar(
+                        containerColor = Color.Transparent,
+                        modifier = Modifier.height(56.dp)
+                    ) {
+                        NavigationBarItem(
+                            icon = { Icon(painterResource(id = R.drawable.ic_home), contentDescription = "Home", tint = Color.White) },
+                            selected = false,
+                            onClick = { /* TODO */ }
+                        )
+                        NavigationBarItem(
+                            icon = { Icon(painterResource(id = R.drawable.ic_edit), contentDescription = "Edit", tint = Color.White) },
+                            selected = false,
+                            onClick = { /* TODO */ }
+                        )
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Add, contentDescription = "Add Note", tint = Color.White) },
+                            selected = false,
+                            onClick = { onCreateNoteClick() }
+                        )
+                        NavigationBarItem(
+                            icon = { Icon(painterResource(id = R.drawable.ic_mic), contentDescription = "Voice Note", tint = Color.White) },
+                            selected = false,
+                            onClick = { /* TODO */ }
+                        )
+                        NavigationBarItem(
+                            icon = { Icon(painterResource(id = R.drawable.ic_images), contentDescription = "Images", tint = Color.White) },
+                            selected = false,
+                            onClick = { /* TODO */ }
+                        )
+                    }
+                }
             }
         }
     ) { innerPadding ->
@@ -144,18 +167,25 @@ fun NoteListScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
+                .background(darkGray)
         ) {
             // Category chips
             ScrollableTabRow(
                 selectedTabIndex = categories.indexOf(selectedCategory),
                 edgePadding = 0.dp,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
+                containerColor = darkGray,
+                contentColor = Color.White
             ) {
                 categories.forEach { category ->
                     Tab(
                         selected = category == selectedCategory,
                         onClick = { viewModel.updateSelectedCategory(category) },
-                        text = { Text(category) },
+                        text = {
+                            Text(
+                                category,
+                                color = if (category == selectedCategory) Color.White else Color.Gray
+                            ) },
                         modifier = Modifier
                             .padding(horizontal = 4.dp, vertical = 8.dp)
                             .clip(RoundedCornerShape(16.dp))
@@ -163,7 +193,7 @@ fun NoteListScreen(
                                 if (category == selectedCategory)
                                     MaterialTheme.colorScheme.primaryContainer
                                 else
-                                    MaterialTheme.colorScheme.surface
+                                    lightGray
                             )
                     )
                 }
@@ -177,7 +207,7 @@ fun NoteListScreen(
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 items(notes) { note ->
-                    NoteCard(note = note, onClick = { onNoteClick(note) })
+                    NoteCard(note = note, onClick = { onNoteClick(note.id) })
                 }
             }
         }
@@ -214,14 +244,15 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = note.content,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 6,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis
+
             )
             // TODO: Add support for images or other content types in notes
         }

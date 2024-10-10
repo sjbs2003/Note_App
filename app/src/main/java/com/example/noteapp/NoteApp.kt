@@ -36,6 +36,9 @@ fun NoteApp() {
                 repository = repository,
                 onNoteClick = { nodeId ->
                     navController.navigate(NoteScreen.NoteDetail.route.replace("{noteId}", nodeId.toString()))
+                },
+                onCreateNoteClick = {
+                    navController.navigate(NoteScreen.NoteCreate.route)
                 }
             )
         }
