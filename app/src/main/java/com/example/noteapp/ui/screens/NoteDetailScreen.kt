@@ -45,14 +45,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
+import com.example.noteapp.data.room.NoteRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteDetailScreen(
     noteId: Long,
     onBackClick: () -> Unit,
-    viewModel: NoteDetailViewModel = viewModel()
+    repository: NoteRepository
 ) {
+    val viewModel: NoteDetailViewModel = viewModel(
+        factory = NoteDetailViewModel.DetailViewModelFactory(repository)
+    )
     val noteState by viewModel.noteState.collectAsState()
     val darkGray = Color(0xFF1E1E1E)
     val context = LocalContext.current
@@ -230,8 +234,6 @@ fun FloatingBottomAppBar(modifier: Modifier = Modifier) {
         }
     }
 }
-
-
 
 fun shareNoteContent(context: Context, title: String, content: String) {
     val intent = Intent(Intent.ACTION_SEND).apply {

@@ -1,6 +1,7 @@
 package com.example.noteapp.ui.screens
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.data.room.NoteEntity
 import com.example.noteapp.data.room.NoteRepository
@@ -43,5 +44,14 @@ class NoteDetailViewModel(private val repository: NoteRepository) : ViewModel() 
             repository.deleteNote(_noteState.value)
         }
     }
-}
 
+    class DetailViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(NoteDetailViewModel::class.java)) {
+            return NoteDetailViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+}

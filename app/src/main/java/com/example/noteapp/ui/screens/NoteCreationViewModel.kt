@@ -2,6 +2,7 @@ package com.example.noteapp.ui.screens
 
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.data.room.NoteEntity
 import com.example.noteapp.data.room.NoteRepository
@@ -36,4 +37,13 @@ open class NoteCreationViewModel(private val repository: NoteRepository) : ViewM
         }
     }
 
+    class CreationViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(NoteCreationViewModel::class.java)) {
+            return NoteCreationViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
 }

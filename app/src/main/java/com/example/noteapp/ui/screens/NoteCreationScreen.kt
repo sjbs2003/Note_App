@@ -38,14 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
+import com.example.noteapp.data.room.NoteRepository
 import com.example.noteapp.ui.AppViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteCreationScreen(
-    viewModel: NoteCreationViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    repository: NoteRepository,
     onBackClick:() -> Unit
 ) {
+    val viewModel: NoteCreationViewModel = viewModel(
+        factory = NoteCreationViewModel.CreationViewModelFactory(repository)
+    )
     val noteState by viewModel.noteState.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 

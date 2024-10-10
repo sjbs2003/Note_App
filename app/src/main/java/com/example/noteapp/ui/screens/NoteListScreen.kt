@@ -62,7 +62,7 @@ fun NoteListScreen(
     onNoteClick: (Long) -> Unit,
     onCreateNoteClick: () -> Unit
 ) {
-    val viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.NoteListViewModelFactory(repository))
+    val viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.ListViewModelFactory(repository))
     val notes by viewModel.notes.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val categories = listOf("All", "Work", "Reading", "Important")
@@ -128,6 +128,9 @@ fun NoteListScreen(
                     shape = RoundedCornerShape(28.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     colors = CardDefaults.cardColors(containerColor = darkGray)
+
+
+
                 ) {
                     NavigationBar(
                         containerColor = Color.Transparent,

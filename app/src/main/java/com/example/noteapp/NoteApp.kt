@@ -23,15 +23,15 @@ enum class NoteScreen(val route: String) {
 @Composable
 fun NoteApp() {
     val navController = rememberNavController()
+    val database = NoteDatabase.getDatabase(LocalContext.current)
+    val noteDao = database.noteDao()
+    val repository = OfflineNoteRepository(noteDao)
 
     NavHost(
         navController = navController,
         startDestination = NoteScreen.NoteList.route
         ) {
         composable(route = NoteScreen.NoteList.route) {
-            val database = NoteDatabase.getDatabase(LocalContext.current)
-            val noteDao = database.noteDao()
-            val repository = OfflineNoteRepository(noteDao)
             NoteListScreen(
                 repository = repository,
                 onNoteClick = { nodeId ->
@@ -49,6 +49,7 @@ fun NoteApp() {
         ) { backStackEntry ->
             val noteId = backStackEntry.arguments?.getLong("noteId")?: return@composable
             NoteDetailScreen(
+                repository = repository,
                 noteId = noteId,
                 onBackClick = {
                     navController.popBackStack()
@@ -58,6 +59,7 @@ fun NoteApp() {
 
         composable(route = NoteScreen.NoteCreate.route) {
             NoteCreationScreen(
+                repository = repository,
                 onBackClick = {
                     navController.popBackStack()
                 }
