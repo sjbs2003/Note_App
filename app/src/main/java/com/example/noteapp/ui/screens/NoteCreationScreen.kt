@@ -1,12 +1,16 @@
 package com.example.noteapp.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -32,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteRepository
+import com.example.noteapp.viewModel.NoteCreationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,10 +58,8 @@ fun NoteCreationScreen(
     )
     val noteState by viewModel.noteState.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
-
-
     val darkGray = Color(0xFF1E1E1E)
-
+    
     Scaffold(
         containerColor = darkGray,
         topBar = {
@@ -135,11 +140,7 @@ fun NoteCreationScreen(
             }
         },
         bottomBar = {
-            FloatingBottomAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp)
-            )
+            AdaptiveBottomAppBar()
         }
     ) { padding ->
         Column(
@@ -183,6 +184,67 @@ fun NoteCreationScreen(
                     .weight(1f),
                 textStyle = LocalTextStyle.current.copy(fontSize = 16.sp)
             )
+        }
+    }
+}
+
+@Composable
+fun AdaptiveBottomAppBar() {
+    val lightGray = Color(0xFF2A2A2A)
+    val windowInsets = WindowInsets.navigationBars
+    val bottomInsets = with(LocalDensity.current) { windowInsets.getBottom(this).toDp() }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp + bottomInsets)
+            .padding(bottom = bottomInsets),
+        color = lightGray,
+        shadowElevation = 8.dp,
+        tonalElevation = 8.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { /* Toggle bold */ }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_formatbold),
+                    contentDescription = "Bold",
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = { /* Toggle italic */ }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_formatitalic),
+                    contentDescription = "Italic",
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = { /* Toggle underline */ }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_formatunderlined),
+                    contentDescription = "Underline",
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = { /* Activate speech to text */ }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_mic),
+                    contentDescription = "Speech to Text",
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = { /* Add image */ }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_images),
+                    contentDescription = "Add Image",
+                    tint = Color.White
+                )
+            }
         }
     }
 }

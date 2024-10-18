@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.screens
+package com.example.noteapp.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

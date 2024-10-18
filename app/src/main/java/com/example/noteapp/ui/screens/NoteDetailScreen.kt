@@ -27,7 +27,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -46,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteRepository
+import com.example.noteapp.viewModel.NoteDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,12 +96,7 @@ fun NoteDetailScreen(
             )
         },
         bottomBar = {
-            FloatingBottomAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp)
-                    .offset(y = if (keyboardOpen) -keyboardHeight else 0.dp)
-            )
+            AdaptiveBottomAppBar()
         }
     ) { innerPadding ->
         Column(
@@ -121,14 +116,8 @@ fun NoteDetailScreen(
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "People can be clever as high as the sky, but as long as they don't write, they will be lost in society and from history",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White.copy(alpha = 0.8f)
-                )
-            )
             Spacer(modifier = Modifier.height(16.dp))
+
             BasicTextField(
                 value = noteState.content,
                 onValueChange = { viewModel.updateContent(it) },

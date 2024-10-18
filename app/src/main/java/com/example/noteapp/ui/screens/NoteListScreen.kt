@@ -24,11 +24,11 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -53,6 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteEntity
 import com.example.noteapp.data.room.NoteRepository
+import com.example.noteapp.viewModel.NoteListViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,50 +120,21 @@ fun NoteListScreen(
                 )
             )
         },
-        bottomBar = {
+        floatingActionButton = {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Card(
-                    shape = RoundedCornerShape(28.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = darkGray)
-
-
-
+                    .padding(bottom = 20.dp, end = 16.dp)
+            ){
+                FloatingActionButton(
+                    onClick = { onCreateNoteClick() },
+                    containerColor = Color.DarkGray,
+                    elevation = FloatingActionButtonDefaults.elevation(8.dp)
                 ) {
-                    NavigationBar(
-                        containerColor = Color.Transparent,
-                        modifier = Modifier.height(56.dp)
-                    ) {
-                        NavigationBarItem(
-                            icon = { Icon(painterResource(id = R.drawable.ic_home), contentDescription = "Home", tint = Color.White) },
-                            selected = false,
-                            onClick = { /* TODO */ }
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(painterResource(id = R.drawable.ic_edit), contentDescription = "Edit", tint = Color.White) },
-                            selected = false,
-                            onClick = { /* TODO */ }
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(Icons.Default.Add, contentDescription = "Add Note", tint = Color.White) },
-                            selected = false,
-                            onClick = { onCreateNoteClick() }
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(painterResource(id = R.drawable.ic_mic), contentDescription = "Voice Note", tint = Color.White) },
-                            selected = false,
-                            onClick = { /* TODO */ }
-                        )
-                        NavigationBarItem(
-                            icon = { Icon(painterResource(id = R.drawable.ic_images), contentDescription = "Images", tint = Color.White) },
-                            selected = false,
-                            onClick = { /* TODO */ }
-                        )
-                    }
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add Note",
+                        tint = Color.White
+                    )
                 }
             }
         }
@@ -201,7 +174,6 @@ fun NoteListScreen(
                     )
                 }
             }
-
             // Grid view for notes
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(2),

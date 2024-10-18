@@ -7,9 +7,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.noteapp.NoteApplication
-import com.example.noteapp.ui.screens.NoteCreationViewModel
-import com.example.noteapp.ui.screens.NoteDetailViewModel
-import com.example.noteapp.ui.screens.NoteListViewModel
+import com.example.noteapp.viewModel.NoteCreationViewModel
+import com.example.noteapp.viewModel.NoteDetailViewModel
+import com.example.noteapp.viewModel.NoteListViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
