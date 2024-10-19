@@ -51,6 +51,7 @@ fun NoteDetailScreen(
     val darkGray = Color(0xFF1E1E1E)
     val context = LocalContext.current
     val keyboardVisible by keyboardAsState()
+
     LaunchedEffect(noteId) {
         viewModel.loadNote(noteId)
     }
@@ -66,7 +67,7 @@ fun NoteDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { shareNoteContent(context, noteState.title, noteState.content) }) {
+                    IconButton(onClick = { noteState?.let { shareNoteContent(context, it.title, it.content) } }) {
                         Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
                     }
                     IconButton(onClick = { viewModel.saveNote() }) {
@@ -100,7 +101,7 @@ fun NoteDetailScreen(
                 .imePadding()
         ) {
             BasicTextField(
-                value = noteState.title,
+                value = noteState?.title ?: "",
                 onValueChange = { viewModel.updateTitle(it) },
                 textStyle = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
@@ -111,7 +112,7 @@ fun NoteDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             BasicTextField(
-                value = noteState.content,
+                value = noteState?.content ?: "",
                 onValueChange = { viewModel.updateContent(it) },
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = Color.White.copy(alpha = 0.8f)

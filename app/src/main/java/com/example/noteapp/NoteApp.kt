@@ -45,7 +45,7 @@ fun NoteApp() {
 
         composable(
             route = NoteScreen.NoteDetail.route,
-            arguments = listOf(navArgument("noteId"){ type = NavType.IntType })
+            arguments = listOf(navArgument("noteId"){ type = NavType.LongType }) // NavType is LongType cause noteId is long
         ) { backStackEntry ->
             val noteId = backStackEntry.arguments?.getLong("noteId")?: return@composable
             NoteDetailScreen(

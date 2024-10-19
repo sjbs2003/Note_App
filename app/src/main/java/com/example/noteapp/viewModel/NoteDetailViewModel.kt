@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 
 class NoteDetailViewModel(private val repository: NoteRepository) : ViewModel() {
 
-    private val _noteState = MutableStateFlow(NoteEntity(title = "", content = ""))
-    val noteState: StateFlow<NoteEntity> = _noteState.asStateFlow()
+    private val _noteState = MutableStateFlow<NoteEntity?>(null)
+    val noteState: StateFlow<NoteEntity?> = _noteState.asStateFlow()
 
     fun loadNote(noteId: Long) {
         viewModelScope.launch {
@@ -26,22 +26,22 @@ class NoteDetailViewModel(private val repository: NoteRepository) : ViewModel() 
     }
 
     fun updateTitle(title: String) {
-        _noteState.value = _noteState.value.copy(title = title)
+        _noteState.value = _noteState.value?.copy(title = title)
     }
 
     fun updateContent(content: String) {
-        _noteState.value = _noteState.value.copy(content = content)
+        _noteState.value = _noteState.value?.copy(content = content)
     }
 
     fun saveNote() {
         viewModelScope.launch {
-            repository.updateNote(_noteState.value)
+            _noteState.value?.let { repository.updateNote(it) }
         }
     }
 
     fun deleteNote() {
         viewModelScope.launch {
-            repository.deleteNote(_noteState.value)
+            _noteState.value?.let { repository.deleteNote(it) }
         }
     }
 
