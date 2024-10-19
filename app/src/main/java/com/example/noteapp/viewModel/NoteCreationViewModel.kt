@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 
 open class NoteCreationViewModel(private val repository: NoteRepository) : ViewModel() {
 
-    private val _noteState = MutableStateFlow(NoteEntity(title = "", content = ""))
+    private val _noteState = MutableStateFlow(NoteEntity(title = "", content = "", category = "All"))
     val noteState: StateFlow<NoteEntity> = _noteState.asStateFlow()
 
-    private val _selectedCategory = MutableStateFlow("Work")
+    private val _selectedCategory = MutableStateFlow("All")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
 
     fun updateTitle(title: String) {
@@ -29,6 +29,7 @@ open class NoteCreationViewModel(private val repository: NoteRepository) : ViewM
 
     fun updateCategory(category: String) {
         _selectedCategory.value = category
+        _noteState.value = _noteState.value.copy(category = category)
     }
 
     fun saveNote() {

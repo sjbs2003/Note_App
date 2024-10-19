@@ -8,12 +8,14 @@ import com.example.noteapp.data.room.NoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(private val repository: NoteRepository) : ViewModel() {
 
-    private val _notes = MutableStateFlow<List<NoteEntity>>(emptyList())
-    val notes: StateFlow<List<NoteEntity>> = _notes.asStateFlow()
+    private val _allNotes = MutableStateFlow<List<NoteEntity>>(emptyList())
+    private val _filteredNotes = MutableStateFlow<List<NoteEntity>>(emptyList())
+    val notes: StateFlow<List<NoteEntity>> = _filteredNotes.asStateFlow()
 
     private val _selectedCategory = MutableStateFlow("All")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
@@ -27,30 +29,43 @@ class NoteListViewModel(private val repository: NoteRepository) : ViewModel() {
 
     private fun loadNotes() {
         viewModelScope.launch {
-            repository.getAllNotes().collect { noteList ->
-                _notes.value = noteList
+            combine(
+                repository.getAllNotes(),
+                _selectedCategory,
+                _searchQuery
+            ) { allNotes, category, query ->
+                filterNotes(allNotes, category, query)
+            }.collect { filteredNotes ->
+                _allNotes.value = filteredNotes
+                _filteredNotes.value = filteredNotes
             }
         }
     }
 
     fun updateSelectedCategory(category: String) {
         _selectedCategory.value = category
-        // TODO: Implement filtering based on category
     }
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
-        // TODO: Implement search functionality
     }
 
-    fun addNewNote() {
-        // TODO: Implement navigation to NoteCreationScreen
+    private fun filterNotes(
+        notes: List<NoteEntity>,
+        category: String,
+        query: String
+    ): List<NoteEntity> {
+        return notes.filter { note ->
+            (category == "All" || note.category == category) &&
+                    (note.title.contains(query, ignoreCase = true) ||
+                            note.content.contains(query, ignoreCase = true))
+        }
     }
 
     class ListViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(NoteListViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
                 return NoteListViewModel(repository) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")

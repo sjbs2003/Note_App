@@ -64,7 +64,9 @@ fun NoteListScreen(
     onNoteClick: (Long) -> Unit,
     onCreateNoteClick: () -> Unit
 ) {
-    val viewModel: NoteListViewModel = viewModel(factory = NoteListViewModel.ListViewModelFactory(repository))
+    val viewModel: NoteListViewModel = viewModel(
+        factory = NoteListViewModel.ListViewModelFactory(repository)
+    )
     val notes by viewModel.notes.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val categories = listOf("All", "Work", "Reading", "Important")
@@ -160,7 +162,9 @@ fun NoteListScreen(
                         text = {
                             Text(
                                 category,
-                                color = if (category == selectedCategory) Color.White else Color.Gray
+                                color =
+                                if (category == selectedCategory) Color.White
+                                else Color.Gray
                             ) },
                         modifier = Modifier
                             .padding(horizontal = 4.dp, vertical = 8.dp)
@@ -227,9 +231,13 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 6,
                 overflow = TextOverflow.Ellipsis
-
             )
-            // TODO: Add support for images or other content types in notes
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Category: ${note.category}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.DarkGray
+            )
         }
     }
 }
