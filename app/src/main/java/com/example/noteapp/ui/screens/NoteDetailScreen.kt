@@ -1,10 +1,16 @@
 package com.example.noteapp.ui.screens
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteRepository
 import com.example.noteapp.viewModel.NoteDetailViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +61,33 @@ fun NoteDetailScreen(
     val noteState by viewModel.noteState.collectAsState()
     val darkGray = Color(0xFF1E1E1E)
     val context = LocalContext.current
+
+    // State to keep track of which field is currently selected for speech input
+    var currentSpeechField by remember { mutableStateOf<SpeechField?>(null) }
+
+    // Launcher for speech recognition
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0) ?: ""
+            when (currentSpeechField) {
+                SpeechField.TITLE -> viewModel.updateTitle((noteState?.title ?: "") + spokenText)
+                SpeechField.CONTENT -> viewModel.updateContent((noteState?.content ?: "") + spokenText)
+                null -> { /* Do nothing */ }
+            }
+        }
+        currentSpeechField = null
+    }
+
+    // Function to start speech recognition
+    fun startSpeechRecognition(field: SpeechField) {
+        currentSpeechField = field
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        }
+        speechRecognizerLauncher.launch(intent)
+    }
 
     LaunchedEffect(noteId) {
         viewModel.loadNote(noteId)
@@ -66,13 +104,6 @@ fun NoteDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Handle speech to text */ }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_mic),
-                            contentDescription = "Speech to Text",
-                            tint = Color.White
-                        )
-                    }
                     IconButton(onClick = { /* Handle add image */ }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_images),
@@ -108,27 +139,53 @@ fun NoteDetailScreen(
                 .background(darkGray)
                 .padding(16.dp)
         ) {
-            BasicTextField(
-                value = noteState?.title ?: "",
-                onValueChange = { viewModel.updateTitle(it) },
-                textStyle = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BasicTextField(
+                    value = noteState?.title ?: "",
+                    onValueChange = { viewModel.updateTitle(it) },
+                    textStyle = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                )
+                IconButton(onClick = { startSpeechRecognition(SpeechField.TITLE) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_mic),
+                        contentDescription = "Speech to Text for Title",
+                        tint = Color.White
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
-
-            BasicTextField(
-                value = noteState?.content ?: "",
-                onValueChange = { viewModel.updateContent(it) },
-                textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.White.copy(alpha = 0.8f)
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalAlignment = Alignment.Top
+            ) {
+                BasicTextField(
+                    value = noteState?.content ?: "",
+                    onValueChange = { viewModel.updateContent(it) },
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.White.copy(alpha = 0.8f)
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(end = 8.dp)
+                )
+                IconButton(onClick = { startSpeechRecognition(SpeechField.CONTENT) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_mic),
+                        contentDescription = "Speech to Text for Content",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }

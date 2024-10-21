@@ -1,11 +1,19 @@
 package com.example.noteapp.ui.screens
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +53,10 @@ import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteRepository
 import com.example.noteapp.viewModel.NoteCreationViewModel
 
+enum class SpeechField {
+    TITLE, CONTENT
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteCreationScreen(
@@ -59,6 +71,32 @@ fun NoteCreationScreen(
     val categories = listOf("All","Work","Reading","Important" )
     val darkGray = Color(0xFF1E1E1E)
     var expanded by remember { mutableStateOf(false) }
+
+    // State to keep track of which field is currently selected for speech input
+    var currentSpeechField by remember { mutableStateOf<SpeechField?>(null) }
+
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK){
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0) ?: ""
+            when (currentSpeechField) {
+                SpeechField.TITLE -> viewModel.updateTitle(noteState.title + spokenText)
+                SpeechField.CONTENT -> viewModel.updateContent(noteState.content + spokenText)
+                null -> { /* Do nothing */}
+            }
+        }
+        currentSpeechField = null
+    }
+
+    // Function to start speech recognition
+    fun startSpeechRecognition(field: SpeechField) {
+        currentSpeechField = field
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        }
+        speechRecognizerLauncher.launch(intent)
+    }
 
     Scaffold(
         containerColor = darkGray,
@@ -79,13 +117,6 @@ fun NoteCreationScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* Handle speech to text */ }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_mic),
-                                contentDescription = "Speech to Text",
-                                tint = Color.White
-                            )
-                        }
                         IconButton(onClick = { /* Handle add image */ }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_images),
@@ -161,40 +192,66 @@ fun NoteCreationScreen(
                 .padding(16.dp)
                 .background(darkGray)
         ) {
-            TextField(
-                value = noteState.title,
-                onValueChange = { viewModel.updateTitle(it) },
-                placeholder = { Text("Title", color = Color.Gray) },
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = darkGray,
-                    unfocusedContainerColor = darkGray,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                textStyle = LocalTextStyle.current.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            )
-            TextField(
-                value = noteState.content,
-                onValueChange = { viewModel.updateContent(it) },
-                placeholder = { Text("Note content", color = Color.Gray) },
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = darkGray,
-                    unfocusedContainerColor = darkGray,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                textStyle = LocalTextStyle.current.copy(fontSize = 16.sp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = noteState.title,
+                    onValueChange = { viewModel.updateTitle(it) },
+                    placeholder = { Text("Title", color = Color.Gray) },
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = darkGray,
+                        unfocusedContainerColor = darkGray,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                )
+                IconButton(onClick = { startSpeechRecognition(SpeechField.TITLE) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_mic),
+                        contentDescription = "Speech to Text for Title",
+                        tint = Color.White
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.  height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalAlignment = Alignment.Top
+            ) {
+                TextField(
+                    value = noteState.content,
+                    onValueChange = { viewModel.updateContent(it) },
+                    placeholder = { Text("Note content", color = Color.Gray) },
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedContainerColor = darkGray,
+                        unfocusedContainerColor = darkGray,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(end = 8.dp),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 16.sp)
+                )
+                IconButton(onClick = { startSpeechRecognition(SpeechField.CONTENT) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_mic),
+                        contentDescription = "Speech to Text for Content",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }
