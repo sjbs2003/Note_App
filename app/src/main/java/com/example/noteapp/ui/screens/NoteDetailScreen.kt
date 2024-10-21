@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Share
@@ -30,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,7 +50,6 @@ fun NoteDetailScreen(
     val noteState by viewModel.noteState.collectAsState()
     val darkGray = Color(0xFF1E1E1E)
     val context = LocalContext.current
-    val keyboardVisible by keyboardAsState()
 
     LaunchedEffect(noteId) {
         viewModel.loadNote(noteId)
@@ -63,11 +62,27 @@ fun NoteDetailScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { noteState?.let { shareNoteContent(context, it.title, it.content) } }) {
+                    IconButton(onClick = { /* Handle speech to text */ }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_mic),
+                            contentDescription = "Speech to Text",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = { /* Handle add image */ }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_images),
+                            contentDescription = "Add Image",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = {
+                        noteState?.let { shareNoteContent(context, it.title, it.content) }
+                    }) {
                         Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
                     }
                     IconButton(onClick = { viewModel.saveNote() }) {
@@ -84,12 +99,6 @@ fun NoteDetailScreen(
                     containerColor = darkGray
                 )
             )
-        },
-        bottomBar = {
-            KeyboardAwareBottomAppBar(
-                visible = keyboardVisible,
-                content = { AdaptiveBottomAppBar() }
-            )
         }
     ) { innerPadding ->
         Column(
@@ -98,7 +107,6 @@ fun NoteDetailScreen(
                 .padding(innerPadding)
                 .background(darkGray)
                 .padding(16.dp)
-                .imePadding()
         ) {
             BasicTextField(
                 value = noteState?.title ?: "",
@@ -125,12 +133,12 @@ fun NoteDetailScreen(
     }
 }
 
-
 fun shareNoteContent(context: Context, title: String, content: String) {
+    val sharedText = "$title\n\n$content"
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
-        putExtra(Intent.EXTRA_TITLE, title)
-        putExtra(Intent.EXTRA_TEXT, content)
+        putExtra(Intent.EXTRA_TITLE, title) // will be used by email apps
+        putExtra(Intent.EXTRA_TEXT, sharedText)
     }
     context.startActivity(
         Intent.createChooser(
