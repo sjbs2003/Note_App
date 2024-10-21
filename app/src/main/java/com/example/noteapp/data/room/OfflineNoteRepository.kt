@@ -12,4 +12,8 @@ class OfflineNoteRepository(private val noteDao: NoteDao): NoteRepository {
     override suspend fun updateNote(note: NoteEntity) = noteDao.update(note)
 
     override suspend fun deleteNote(note: NoteEntity) = noteDao.delete(note)
+
+    override suspend fun getNoteImageUri(id: Long): String? = noteDao.getNoteImageUri(id)
+
+    override suspend fun updateNoteImage(id: Long, imageUri: String?) = noteDao.updateNoteImage(id, imageUri)
 }

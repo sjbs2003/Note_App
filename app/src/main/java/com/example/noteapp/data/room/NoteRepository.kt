@@ -11,4 +11,6 @@ interface NoteRepository{
     suspend fun insertNote(note: NoteEntity)
     suspend fun deleteNote(note: NoteEntity)
     suspend fun updateNote(note: NoteEntity)
+    suspend fun updateNoteImage(id: Long, imageUri:String?)
+    suspend fun getNoteImageUri(id: Long): String?
 }

@@ -3,10 +3,13 @@ package com.example.noteapp.ui.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,12 +41,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
 import com.example.noteapp.data.room.NoteRepository
 import com.example.noteapp.viewModel.NoteDetailViewModel
@@ -61,6 +68,12 @@ fun NoteDetailScreen(
     val noteState by viewModel.noteState.collectAsState()
     val darkGray = Color(0xFF1E1E1E)
     val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.updateImage(it.toString()) }
+    }
 
     // State to keep track of which field is currently selected for speech input
     var currentSpeechField by remember { mutableStateOf<SpeechField?>(null) }
@@ -104,7 +117,7 @@ fun NoteDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Handle add image */ }) {
+                    IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_images),
                             contentDescription = "Add Image",
@@ -163,6 +176,25 @@ fun NoteDetailScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Image view
+            noteState?.imageUri?.let { uri ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = "Note Image",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 verticalAlignment = Alignment.Top
@@ -189,6 +221,7 @@ fun NoteDetailScreen(
         }
     }
 }
+
 
 fun shareNoteContent(context: Context, title: String, content: String) {
     val sharedText = "$title\n\n$content"

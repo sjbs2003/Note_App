@@ -80,6 +80,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation (libs.androidx.lifecycle.viewmodel.ktx.v286)
     implementation (libs.androidx.lifecycle.viewmodel.savedstate)
-
+    implementation(libs.coil.compose)
 
 }

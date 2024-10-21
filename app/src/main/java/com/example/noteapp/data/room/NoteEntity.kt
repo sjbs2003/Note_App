@@ -9,5 +9,6 @@ data class NoteEntity(
     val title: String,
     val content: String,
     val category: String = "All",
-    val creationDate: Long = System.currentTimeMillis()
+    val creationDate: Long = System.currentTimeMillis(),
+    val imageUri: String? = null
 )

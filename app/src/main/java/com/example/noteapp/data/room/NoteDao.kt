@@ -24,4 +24,10 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes WHERE id = :id")
     fun getNoteById(id: Long): Flow<NoteEntity?>
+
+    @Query("UPDATE notes SET imageUri = :imageUri WHERE id = :id")
+    suspend fun updateNoteImage(id: Long, imageUri: String?)
+
+    @Query("SELECT imageUri FROM notes WHERE id = :id")
+    suspend fun getNoteImageUri(id: Long): String?
 }

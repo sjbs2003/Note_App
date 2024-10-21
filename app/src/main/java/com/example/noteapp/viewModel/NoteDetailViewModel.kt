@@ -17,10 +17,8 @@ class NoteDetailViewModel(private val repository: NoteRepository) : ViewModel() 
 
     fun loadNote(noteId: Long) {
         viewModelScope.launch {
-            repository.getNote(noteId).collect { note->
-                note?.let {
-                    _noteState.value = it
-                }
+            repository.getNote(noteId).collect { note ->
+                _noteState.value = note
             }
         }
     }
@@ -31,6 +29,10 @@ class NoteDetailViewModel(private val repository: NoteRepository) : ViewModel() 
 
     fun updateContent(content: String) {
         _noteState.value = _noteState.value?.copy(content = content)
+    }
+
+    fun updateImage(imageUri: String?) {
+        _noteState.value = _noteState.value?.copy(imageUri = imageUri)
     }
 
     fun saveNote() {
@@ -46,12 +48,12 @@ class NoteDetailViewModel(private val repository: NoteRepository) : ViewModel() 
     }
 
     class DetailViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NoteDetailViewModel::class.java)) {
-            return NoteDetailViewModel(repository) as T
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(NoteDetailViewModel::class.java)) {
+                return NoteDetailViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
-}
 }
