@@ -2,9 +2,13 @@ package com.example.noteapp.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import com.example.noteapp.data.room.NoteEntity
-import com.example.noteapp.data.room.NoteRepository
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.noteapp.NoteApplication
+import com.example.noteapp.data.model.NoteEntity
+import com.example.noteapp.data.model.NoteRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,16 +63,6 @@ class NoteListViewModel(private val repository: NoteRepository) : ViewModel() {
             (category == "All" || note.category == category) &&
                     (note.title.contains(query, ignoreCase = true) ||
                             note.content.contains(query, ignoreCase = true))
-        }
-    }
-
-    class ListViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(NoteListViewModel::class.java)) {
-                return NoteListViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }

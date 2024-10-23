@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.screens
+package com.example.noteapp.ui.screens_view
 
 import android.app.Activity
 import android.content.Context
@@ -51,7 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
-import com.example.noteapp.data.room.NoteRepository
+import com.example.noteapp.data.model.NoteRepository
+import com.example.noteapp.ui.AppViewModelProvider
 import com.example.noteapp.viewModel.NoteDetailViewModel
 
 
@@ -59,11 +60,10 @@ import com.example.noteapp.viewModel.NoteDetailViewModel
 @Composable
 fun NoteDetailScreen(
     noteId: Long,
-    onBackClick: () -> Unit,
-    repository: NoteRepository
+    onBackClick: () -> Unit
 ) {
     val viewModel: NoteDetailViewModel = viewModel(
-        factory = NoteDetailViewModel.DetailViewModelFactory(repository)
+        factory = AppViewModelProvider.Factory
     )
     val noteState by viewModel.noteState.collectAsState()
     val darkGray = Color(0xFF1E1E1E)

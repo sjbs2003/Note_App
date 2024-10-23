@@ -1,8 +1,8 @@
 package com.example.noteapp
 
 import android.app.Application
-import com.example.noteapp.data.room.AppContainer
-import com.example.noteapp.data.room.AppDataContainer
+import com.example.noteapp.data.model.AppContainer
+import com.example.noteapp.data.model.AppDataContainer
 
 class NoteApplication: Application() {
 

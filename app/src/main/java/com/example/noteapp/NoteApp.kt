@@ -1,17 +1,14 @@
 package com.example.noteapp
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.noteapp.data.room.NoteDatabase
-import com.example.noteapp.data.room.OfflineNoteRepository
-import com.example.noteapp.ui.screens.NoteCreationScreen
-import com.example.noteapp.ui.screens.NoteDetailScreen
-import com.example.noteapp.ui.screens.NoteListScreen
+import com.example.noteapp.ui.screens_view.NoteCreationScreen
+import com.example.noteapp.ui.screens_view.NoteDetailScreen
+import com.example.noteapp.ui.screens_view.NoteListScreen
 
 
 enum class NoteScreen(val route: String) {
@@ -23,9 +20,6 @@ enum class NoteScreen(val route: String) {
 @Composable
 fun NoteApp() {
     val navController = rememberNavController()
-    val database = NoteDatabase.getDatabase(LocalContext.current)
-    val noteDao = database.noteDao()
-    val repository = OfflineNoteRepository(noteDao)
 
     NavHost(
         navController = navController,
@@ -33,7 +27,6 @@ fun NoteApp() {
         ) {
         composable(route = NoteScreen.NoteList.route) {
             NoteListScreen(
-                repository = repository,
                 onNoteClick = { nodeId ->
                     navController.navigate(NoteScreen.NoteDetail.route.replace("{noteId}", nodeId.toString()))
                 },
@@ -49,7 +42,6 @@ fun NoteApp() {
         ) { backStackEntry ->
             val noteId = backStackEntry.arguments?.getLong("noteId")?: return@composable
             NoteDetailScreen(
-                repository = repository,
                 noteId = noteId,
                 onBackClick = {
                     navController.popBackStack()
@@ -59,7 +51,6 @@ fun NoteApp() {
 
         composable(route = NoteScreen.NoteCreate.route) {
             NoteCreationScreen(
-                repository = repository,
                 onBackClick = {
                     navController.popBackStack()
                 }

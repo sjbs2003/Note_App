@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.screens
+package com.example.noteapp.ui.screens_view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -52,20 +52,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
-import com.example.noteapp.data.room.NoteEntity
-import com.example.noteapp.data.room.NoteRepository
+import com.example.noteapp.data.model.NoteEntity
+import com.example.noteapp.ui.AppViewModelProvider
 import com.example.noteapp.viewModel.NoteListViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListScreen(
-    repository: NoteRepository,
     onNoteClick: (Long) -> Unit,
     onCreateNoteClick: () -> Unit
 ) {
     val viewModel: NoteListViewModel = viewModel(
-        factory = NoteListViewModel.ListViewModelFactory(repository)
+        factory = AppViewModelProvider.Factory
     )
     val notes by viewModel.notes.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()

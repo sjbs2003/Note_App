@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.screens
+package com.example.noteapp.ui.screens_view
 
 import android.app.Activity
 import android.content.Intent
@@ -54,7 +54,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
-import com.example.noteapp.data.room.NoteRepository
+import com.example.noteapp.data.model.NoteRepository
+import com.example.noteapp.ui.AppViewModelProvider
 import com.example.noteapp.viewModel.NoteCreationViewModel
 
 enum class SpeechField {
@@ -64,11 +65,10 @@ enum class SpeechField {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteCreationScreen(
-    repository: NoteRepository,
     onBackClick:() -> Unit
 ) {
     val viewModel: NoteCreationViewModel = viewModel(
-        factory = NoteCreationViewModel.CreationViewModelFactory(repository)
+        factory = AppViewModelProvider.Factory
     )
     val noteState by viewModel.noteState.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
