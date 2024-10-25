@@ -1,5 +1,6 @@
 package com.example.noteapp.ui.screens_view
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -229,10 +230,16 @@ fun NoteCard(note: NoteEntity, onClick: () -> Unit) {
             // display the image if exist
             note.imageUri?.let { uri->
                 Image(
-                    painter = rememberAsyncImagePainter(uri),
+                    painter = rememberAsyncImagePainter(
+                        model = if (uri.startsWith("file://")) {
+                            Uri.parse(uri)
+                        } else{
+                            uri
+                        }
+                    ),
                     contentDescription = "Note Image",
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .height(150.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop

@@ -54,6 +54,7 @@ import com.example.noteapp.R
 import com.example.noteapp.data.model.NoteRepository
 import com.example.noteapp.ui.AppViewModelProvider
 import com.example.noteapp.viewModel.NoteDetailViewModel
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +74,23 @@ fun NoteDetailScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { viewModel.updateImage(it.toString()) }
+    }
+
+    fun copyImageToAppStorage(context: Context, uri: Uri): Uri {
+        val contentResolver = context.contentResolver
+        val fileName = "note_image_${System.currentTimeMillis()}.jpg"
+        val imagesDir = File(context.filesDir, "note_images").apply {
+            if (!exists()) mkdirs()
+        }
+        val file = File(imagesDir, fileName)
+
+        contentResolver.openInputStream(uri)?.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return Uri.fromFile(file)
     }
 
     // State to keep track of which field is currently selected for speech input
@@ -186,9 +204,18 @@ fun NoteDetailScreen(
                         .clip(RoundedCornerShape(8.dp))
                 ) {
                     Image(
-                        painter = rememberAsyncImagePainter(uri),
+                        painter = rememberAsyncImagePainter(
+                            model = if (uri.startsWith("file://")) {
+                                Uri.parse(uri)
+                            } else{
+                                uri
+                            }
+                        ),
                         contentDescription = "Note Image",
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .height(150.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }
