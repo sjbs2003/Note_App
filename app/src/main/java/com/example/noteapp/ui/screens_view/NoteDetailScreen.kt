@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
-import com.example.noteapp.data.model.NoteRepository
 import com.example.noteapp.ui.AppViewModelProvider
 import com.example.noteapp.viewModel.NoteDetailViewModel
 import java.io.File
@@ -70,12 +69,6 @@ fun NoteDetailScreen(
     val darkGray = Color(0xFF1E1E1E)
     val context = LocalContext.current
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let { viewModel.updateImage(it.toString()) }
-    }
-
     fun copyImageToAppStorage(context: Context, uri: Uri): Uri {
         val contentResolver = context.contentResolver
         val fileName = "note_image_${System.currentTimeMillis()}.jpg"
@@ -91,6 +84,15 @@ fun NoteDetailScreen(
         }
 
         return Uri.fromFile(file)
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val permanentUri = copyImageToAppStorage(context, it)
+            viewModel.updateImage(permanentUri.toString())
+        }
     }
 
     // State to keep track of which field is currently selected for speech input
